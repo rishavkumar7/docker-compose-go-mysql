@@ -1,13 +1,26 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rishavkumar7/docker-compose-go-mysql/database"
 )
 
+var db *sql.DB
+
 func main() {
+	db = database.ConnectDb()
+
+	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS messages (id INT AUTO_INCREMENT PRIMARY KEY, content TEXT)`)
+	if err != nil {
+		log.Fatalf("Error while creating table: %v\n", err)
+		return
+	}
+
 	router := gin.Default()
 	messageRouter := router.Group("/message")
 	messageRouter.POST("/add", addMessage)
