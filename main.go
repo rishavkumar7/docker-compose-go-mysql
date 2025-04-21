@@ -61,9 +61,40 @@ func addMessage(c *gin.Context) {
 }
 
 func fetchMessages(c *gin.Context) {
+	type message struct {
+		Id      int    `json:"id"`
+		Content string `json:"content"`
+	}
+	var messages []message
+	rows, err := db.Query(`SELECT id, content FROM messages`)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error while fetching messages",
+			"success": false,
+			"error":   err.Error(),
+		})
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var msg message
+		err = rows.Scan(&msg.Id, &msg.Content)
+		messages = append(messages, msg)
+	}
+	if err != nil && err != sql.ErrNoRows {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error while binding the fetched messages",
+			"success": false,
+			"error":   err.Error(),
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Messages fetched successfully",
 		"success": true,
+		"data":    messages,
 	})
 }
 
