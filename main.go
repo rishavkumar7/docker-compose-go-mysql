@@ -99,6 +99,28 @@ func fetchMessages(c *gin.Context) {
 }
 
 func updateMessage(c *gin.Context) {
+	var message struct {
+		Content string `json:"content" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&message); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid input",
+			"success": false,
+			"error":   err.Error(),
+		})
+		return
+	}
+	id := c.Param("id")
+	_, err := db.Exec(`UPDATE messages SET content = ? WHERE id = ?`, message.Content, id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error while updating message",
+			"success": false,
+			"error":   err.Error(),
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Message updated successfully",
 		"success": true,
