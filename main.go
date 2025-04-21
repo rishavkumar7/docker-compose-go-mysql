@@ -128,6 +128,17 @@ func updateMessage(c *gin.Context) {
 }
 
 func removeMessage(c *gin.Context) {
+	id := c.Param("id")
+	_, err := db.Exec(`DELETE FROM messages WHERE id = ?`, id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"messages": "Error while removing the message",
+			"success":  false,
+			"error":    err.Error(),
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Message removed successfully",
 		"success": true,
