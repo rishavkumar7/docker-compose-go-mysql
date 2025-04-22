@@ -21,7 +21,7 @@ services:
   compose-app:
     build:
       context: .
-    image: compose-app-image:latest
+    image: rishavkumar7/compose-app-image:latest
     container_name: compose-app-container
     environment:
       DB_USER: root 
