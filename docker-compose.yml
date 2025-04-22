@@ -1,0 +1,50 @@
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: rishavkumar
+      MYSQL_DATABASE: composedb
+    ports:
+      - "3306:3306"
+    volumes:
+      - messageVolume:/var/lib/mysql
+    networks:
+      - messageNetwork
+    restart: always
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prishavkumar"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+  compose-app:
+    build:
+      context: .
+    image: compose-app-image:latest
+    container_name: compose-app-container
+    environment:
+      DB_USER: root 
+      DB_PASSWORD: rishavkumar
+      DB_HOST: mysql-container
+      DB_PORT: 3306
+      DB_NAME: composedb
+    ports: 
+      - "8501:8501"
+    networks:
+      - messageNetwork
+    depends_on:
+      - mysql
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8501/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+volumes:
+  messageVolume:
+
+networks:
+  messageNetwork:

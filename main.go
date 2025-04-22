@@ -22,6 +22,9 @@ func main() {
 	}
 
 	router := gin.Default()
+
+	router.GET("/health", healthCheck)
+
 	messageRouter := router.Group("/message")
 	messageRouter.POST("/add", addMessage)
 	messageRouter.GET("/fetch", fetchMessages)
@@ -29,6 +32,13 @@ func main() {
 	messageRouter.DELETE("/remove/:id", removeMessage)
 	fmt.Println("Starting server on port 8501...")
 	router.Run(":8501")
+}
+
+func healthCheck(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Server is running",
+		"success": true,
+	})
 }
 
 func addMessage(c *gin.Context) {
