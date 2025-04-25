@@ -31,7 +31,7 @@ func main() {
 	messageRouter.PUT("/update/:id", updateMessage)
 	messageRouter.DELETE("/remove/:id", removeMessage)
 	fmt.Println("Starting server on port 8501...")
-	router.Run(":8501")
+	router.Run("0.0.0.0:8501")
 }
 
 func healthCheck(c *gin.Context) {
