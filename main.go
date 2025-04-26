@@ -36,7 +36,7 @@ func main() {
 
 func healthCheck(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Server is running and healthy",
+		"message": "Server is healthy and functioning properly",
 		"success": true,
 	})
 }
